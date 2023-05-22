@@ -1,0 +1,102 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+/*
+ * Licensed to Elasticsearch under one or more contributor
+ * license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright
+ * ownership. Elasticsearch licenses this file to you under
+ * the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+//import org.opensearch.gradle.testclusters.ExtensionsProperties
+
+buildscript {
+  ext {
+    opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
+    isSnapshot = "true" == System.getProperty("build.snapshot", "true")
+    buildVersionQualifier = System.getProperty("build.version_qualifier", "")
+  }
+
+  repositories {
+    mavenLocal()
+    maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
+    mavenCentral()
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+
+  dependencies {
+    classpath "org.opensearch.gradle:build-tools:${opensearch_version}"
+  }
+}
+
+plugins {
+  id 'java-library'
+}
+
+repositories {
+  mavenLocal()
+  maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
+  mavenCentral()
+  maven { url "https://plugins.gradle.org/m2/" }
+  maven { url "https://d1nvenhzbhpy0q.cloudfront.net/snapshots/lucene/" }
+}
+
+
+
+
+
+//apply plugin: 'opensearch.yaml-rest-test'
+//apply plugin: 'opensearch.opensearchplugin'
+apply plugin: 'application'
+
+mainClassName = 'org.opensearch.plugin.analysis.nori.AnalysisNoriExtension'
+
+/*opensearchplugin {
+  description 'The Korean (nori) Analysis plugin integrates Lucene nori analysis module into opensearch.'
+  classname 'org.opensearch.plugin.analysis.nori.AnalysisNoriPlugin'
+}*/
+
+ext {
+  projectSubstitutions = [:]
+  licenseFile = rootProject.file('LICENSE.txt')
+  noticeFile = rootProject.file('NOTICE.txt')
+}
+
+
+dependencies {
+  def opensearchVersion = "3.0.0-SNAPSHOT"
+  compileOnly "org.opensearch:opensearch:${opensearchVersion}"
+  implementation "org.opensearch.sdk:opensearch-sdk-java:2.0.0-SNAPSHOT"
+  implementation "org.apache.lucene:lucene-analysis-nori:9.7.0-snapshot-4d1ed9e"
+  testImplementation "org.opensearch.test:framework:${opensearchVersion}"
+}
+
+/*restResources {
+  restApi {
+    includeCore '_common', 'indices', 'index', 'search'
+  }
+}*/
+
+//tasks.named("dependencyLicenses").configure {
+//  mapping from: /lucene-.*/, to: 'lucene'
+//}
